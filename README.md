@@ -21,7 +21,7 @@ The inital set-up consist of the following:
 - Uses ArduinoJSON, FastLED and the generic ESP8266 Wifi library
 
 *Connection*
-- Connects with a Supabase databse trough API
+- Connects with a Supabase databse trough API and HPPS
 
 
 
