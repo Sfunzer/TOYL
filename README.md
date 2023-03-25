@@ -16,6 +16,14 @@ The inital set-up consist of the following:
 - Wemos D1 Mini microcontroller
 - WS2812B RGB LED(s)
 
+*Software*
+- Coded in C++ with the Arduino Framework/Visual Studio Code with PlatformIO
+- Uses ArduinoJSON, FastLED and the generic ESP8266 Wifi library
+
+*Connection*
+- Connects with a Supabase databse trough API
+
+
 
 
 **Context**
