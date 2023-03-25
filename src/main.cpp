@@ -9,9 +9,9 @@
 #include <FastLED.h>
 
 //Network & JSON Config
-const char* ssid = "SvenFi-2.4";
-const char* password = "19368726";
-const char *host = "https://eihxqcwtouoobfrckoxt.supabase.co/rest/v1/lampsignal?id=eq.2&select=*&apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpaHhxY3d0b3Vvb2JmcmNrb3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzkyNTQ0MDAsImV4cCI6MTk5NDgzMDQwMH0.m7Z667Ku3gcAnJ3y85NkWw3FMx90pfv71EVgiYedBYo";
+const char* ssid = "ADDYOURSSID";
+const char* password = "ADDYOUKEY";
+const char *host = "LINKTOJSONFILE";
 //const char *host = "https://www.howsmyssl.com/a/check";
 
 //LED-Config
