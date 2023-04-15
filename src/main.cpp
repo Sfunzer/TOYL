@@ -9,20 +9,18 @@
 #include <ArduinoJson.h>
 #include <NeoPixelBus.h>
 
-//Network & JSON Config
-const char* ssid = "RadiatorLabs";
-const char* password = "L2HaH4ghz";
-const char *host = "https://eihxqcwtouoobfrckoxt.supabase.co/rest/v1/lampsignal?id=eq.2&select=*&apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpaHhxY3d0b3Vvb2JmcmNrb3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzkyNTQ0MDAsImV4cCI6MTk5NDgzMDQwMH0.m7Z667Ku3gcAnJ3y85NkWw3FMx90pfv71EVgiYedBYo";
-//const char *host = "https://www.howsmyssl.com/a/check";
+//Network & JSON Config: Safely stored in Platformio.ini
+const char* ssid = SSID_NAME; 
+const char* password = SSID_PASSWORD;
+const char *host = JSON;
 
 //LED-Config
 const uint16_t PixelCount = 8; 
-const uint8_t PixelPin = 2; //ignored for Esp8266
-NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount, PixelPin);
+NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
 
-//LED-Color Config
-RgbColor yellow(100,80,0);
-RgbColor black(0,0,0);
+//LED-Color Config with RGB values in steps of 255 points. 
+RgbColor lampColor(100,120,0);
+RgbColor lampColorOff(0,0,0);
 
 void setup() {
 
@@ -43,15 +41,11 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print('.');
     delay(1000);
-  }
-
- 
+  } 
 }
 
 
 void loop() {
-
-
 
 //HTTPS Connection to JSON/SupaBase
 String payload;
@@ -107,7 +101,7 @@ if (lamp_state == "true")
 {
   for (int i = 0; i < PixelCount; i++)
     {
-      strip.SetPixelColor(i, yellow);
+      strip.SetPixelColor(i, lampColor);
     }
     strip.Show();
 
@@ -115,7 +109,7 @@ if (lamp_state == "true")
 } else {
   for (int i = 0; i < PixelCount; i++)
     {
-      strip.SetPixelColor(i, black);
+      strip.SetPixelColor(i, lampColorOff);
     }
     strip.Show();
 
