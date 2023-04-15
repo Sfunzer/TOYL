@@ -10,8 +10,8 @@
 #include <NeoPixelBus.h>
 
 //Network & JSON Config
-const char* ssid = "RadiatorLabs";
-const char* password = "L2HaH4ghz";
+const char* ssid = "";
+const char* password = "";
 const char *host = "https://eihxqcwtouoobfrckoxt.supabase.co/rest/v1/lampsignal?id=eq.2&select=*&apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpaHhxY3d0b3Vvb2JmcmNrb3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzkyNTQ0MDAsImV4cCI6MTk5NDgzMDQwMH0.m7Z667Ku3gcAnJ3y85NkWw3FMx90pfv71EVgiYedBYo";
 //const char *host = "https://www.howsmyssl.com/a/check";
 
