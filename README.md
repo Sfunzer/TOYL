@@ -14,14 +14,14 @@ The inital set-up consist of the following:
 
 *Hardware*
 - Wemos D1 Mini microcontroller
-- WS2812B RGB LED(s)
+- WS2812B RGB LED(s) or equivalent like SK6812
 
 *Software*
 - Coded in C++ with the Arduino Framework/Visual Studio Code with PlatformIO
-- Uses ArduinoJSON, FastLED and the generic ESP8266 Wifi library
+- Uses ArduinoJSON, NeoPixelBus and the generic ESP8266 Wifi library
 
 *Connection*
-- Connects with a Supabase databse trough API and HPPS
+- Connects with a Supabase database through REST-API and HTTP(S)
 
 
 

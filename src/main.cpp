@@ -19,8 +19,20 @@ const uint16_t PixelCount = 8;
 NeoPixelBus<NeoGrbFeature, NeoWs2812xMethod> strip(PixelCount);
 
 //LED-Color Config with RGB values in steps of 255 points. 
-RgbColor lampColor(100,120,0);
+RgbColor lampColor(128,128,128);
 RgbColor lampColorOff(0,0,0);
+
+//Colors based on front-end development
+RgbColor yellow(255,226,4);
+RgbColor orange(236,104,10);
+RgbColor red(229,44,34);
+RgbColor violet(204,64,144);
+RgbColor purple(109,69,149);
+RgbColor blue(28,77,155);
+RgbColor marine(29,164,222);
+RgbColor green(93,182,116);
+RgbColor grass(162,198,45);
+RgbColor lime(224,218,1);
 
 void setup() {
 
@@ -89,19 +101,30 @@ Serial.println("Payload decoded:");
 Serial.println(payload);
 
 //Deserializing JSON to Strings (for now, a straight boolean needs some more work)
-DynamicJsonDocument doc(60);
+DynamicJsonDocument doc(120);
 deserializeJson(doc, payload);
 
 String lamp_id = doc[0]["id"];
 String lamp_state = doc[0]["lamp_on"];
+String json_color = doc[0]["color"];
 
-Serial.println("This is the ID: '"+lamp_id + "' And this is the 'ON'-State: "+lamp_state);
+Serial.println("This is the ID: '"+lamp_id + "' And this is the 'ON'-State: "+lamp_state+ "' the lamp color is: '" +json_color);
+
+
+//if (json_color == "red")
+//{
+//  lampColor == red;
+//} if (json_color == "blue")
+//{
+//  lampColor == blue;
+//}
+
 
 if (lamp_state == "true")
 {
   for (int i = 0; i < PixelCount; i++)
     {
-      strip.SetPixelColor(i, lampColor);
+      strip.SetPixelColor(i, marine);
     }
     strip.Show();
 
