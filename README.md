@@ -18,10 +18,10 @@ The inital set-up consist of the following:
 
 *Software*
 - Coded in C++ with the Arduino Framework/Visual Studio Code with PlatformIO
-- Uses ArduinoJSON, NeoPixelBus and the generic ESP8266 Wifi library
+- Uses MQTT, NeoPixelBus and the generic ESP8266 Wifi library
 
 *Connection*
-- Connects with a Supabase database through REST-API and HTTP(S)
+- Connects with MQTT
 
 
 
