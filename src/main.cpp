@@ -1,18 +1,17 @@
-//Version 15-04-2023
+//Version 27-07-2023
 #include <Arduino.h>
-
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <WiFiClientSecureBearSSL.h>
 
 //Project specific librarys
-#include <ArduinoJson.h>
+#include <PubSubClient.h>
+//#include <ArduinoJson.h>
 #include <NeoPixelBus.h>
 
-//Network & JSON Config: Safely stored in Platformio.ini
+//Network & MQTT Config: Safely stored in Platformio.ini
 const char* ssid = SSID_NAME; 
 const char* password = SSID_PASSWORD;
-const char *host = JSON;
+//const char *host = JSON;
+const char* mqtt_server = "192.168.90.29";
 
 //LED-Config
 const uint16_t PixelCount = 8; 
@@ -34,6 +33,73 @@ RgbColor green(93,182,116);
 RgbColor grass(162,198,45);
 RgbColor lime(224,218,1);
 
+
+//Client declaration for used modules
+WiFiClient espClient;
+PubSubClient client(espClient);
+unsigned long lastMsg = 0;
+#define MSG_BUFFER_SIZE	(50)
+char msg[MSG_BUFFER_SIZE];
+int value = 0;
+
+//Module for Serial Line-write to display the messages received trough subscription, and to turn on the LED
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+  
+//Turning on the LED if the message starts with the 't' of True.
+  if ((char)payload[0] == 't')
+{
+  for (int i = 0; i < PixelCount; i++)
+    {
+      strip.SetPixelColor(i, orange);
+    }
+    strip.Show();
+
+  Serial.println("Light is 'ON'");
+} else {
+  for (int i = 0; i < PixelCount; i++)
+    {
+      strip.SetPixelColor(i, lampColorOff);
+    }
+    strip.Show();
+
+  Serial.println("Light is 'OFF'");
+}
+delay(0);
+
+}
+
+//Module for reconnection if anything fails
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Create a random client ID
+    String clientId = "ESP8266Client-";
+    clientId += String(random(0xffff), HEX);
+    // Attempt to connect
+    if (client.connect(clientId.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      client.publish("outTopic", "hello world");
+      // ... and resubscribe
+      client.subscribe("inTopic");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+
 void setup() {
 
   //debug setup
@@ -41,6 +107,11 @@ void setup() {
   Serial.setDebugOutput(true);
 
   Serial.println();
+
+  //pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
+
 
  //LED-Setup
   strip.Begin();
@@ -58,85 +129,8 @@ void setup() {
 
 
 void loop() {
-
-//HTTPS Connection to JSON/SupaBase
-String payload;
-int httpCode;
-
-  // wait for WiFi connection
-  if ((WiFi.status() == WL_CONNECTED)) {
-
-    std::unique_ptr<BearSSL::WiFiClientSecure>client(new BearSSL::WiFiClientSecure);
-
-    // Ignore SSL certificate validation
-    client->setInsecure();
-    
-    //create an HTTPClient instance
-    HTTPClient https;
-    //Initializing an HTTPS communication using the secure client
-    Serial.print("[HTTPS] begin...\n");
-    if (https.begin(*client, host)) {  // HTTPS
-      Serial.print("[HTTPS] GET...\n");
-      // start connection and send HTTP header
-      httpCode = https.GET();
-      // httpCode will be negative on error
-      if (httpCode > 0) {
-        // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
-        // file found at server
-        if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-          payload = https.getString();
-          //Serial.println(payload); //to remove in the future
-        }
-      } else {
-        Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
-      }
-      https.end();
-    } else {
-      Serial.printf("[HTTPS] Unable to connect\n");
-    }
+  if (!client.connected()) {
+    reconnect();
   }
-
-Serial.println("Payload decoded:");
-Serial.println(payload);
-
-//Deserializing JSON to Strings (for now, a straight boolean needs some more work)
-DynamicJsonDocument doc(120);
-deserializeJson(doc, payload);
-
-String lamp_id = doc[0]["id"];
-String lamp_state = doc[0]["lamp_on"];
-String json_color = doc[0]["color"];
-
-Serial.println("This is the ID: '"+lamp_id + "' And this is the 'ON'-State: "+lamp_state+ "' the lamp color is: '" +json_color);
-
-
-//if (json_color == "red")
-//{
-//  lampColor == red;
-//} if (json_color == "blue")
-//{
-//  lampColor == blue;
-//}
-
-
-if (lamp_state == "true")
-{
-  for (int i = 0; i < PixelCount; i++)
-    {
-      strip.SetPixelColor(i, marine);
-    }
-    strip.Show();
-
-  Serial.println("Light is 'ON'");
-} else {
-  for (int i = 0; i < PixelCount; i++)
-    {
-      strip.SetPixelColor(i, lampColorOff);
-    }
-    strip.Show();
-
-  Serial.println("Light is 'OFF'");
-}
-delay(0);
+  client.loop();
 }
